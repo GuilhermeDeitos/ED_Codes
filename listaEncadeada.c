@@ -50,7 +50,7 @@ void insereInicio(LISTA *lista)
     *lista = novo;         // o inicio da lista recebe o endereco do novo (que agora eh o inicio da lista)
 }
 
-void inserirInicioOrdenado(LISTA *lista){
+void inserirOrdenado(LISTA *lista){
     node *novo = (node *)malloc(sizeof(node)); // aloca memoria para o novo no
     if (novo == NULL)
     {
@@ -75,7 +75,6 @@ void inserirInicioOrdenado(LISTA *lista){
 
     }
 }
-
 
 void insereFinal(LISTA *lista)
 {
@@ -235,6 +234,27 @@ void removeFinal(LISTA *lista)
         printf("Removido com sucesso\n");
     }
 }
+void removerMeio(LISTA *lista, int numRem){
+    if((*lista) == NULL) { //Caso seja o primeiro valor
+        printf("Lista vazia\n");
+    } else {
+        node *aux,*aux2;
+        aux = (*lista);
+        while(aux && aux->data != numRem){
+            aux2 = aux;
+            aux = aux->prox;
+        }
+        if(aux == NULL){
+            printf("Valor nao encontrado\n");
+        } else {
+            aux2->prox = aux->prox;
+            free(aux);
+            printf("Removido com sucesso\n");
+        }
+
+    }
+
+}
 
 int main()
 {
@@ -279,7 +299,7 @@ int main()
             ordena(lista);
             break;
         case 8:
-            inserirInicioOrdenado(lista);
+            inserirOrdenado(lista);
             break;
         case 9:
             int indexAnt;
