@@ -244,7 +244,11 @@ void removeFinal(LISTA *lista)
         printf("Lista vazia\n");
     }
     else
-    {
+    if((*lista)->prox == NULL){
+        free(*lista);
+        *lista = NULL;
+        printf("Removido com sucesso\n");
+    }else{
         node *anterior, *aux; // cria um ponteiro para o n� anterior e um auxiliar para percorrer a lista
         aux = *lista;         // o auxiliar recebe o endereco do inicio da lista
         while (aux->prox != NULL)
@@ -257,75 +261,3 @@ void removeFinal(LISTA *lista)
         printf("Removido com sucesso\n");
     }
 }
-
-int main()
-{
-    LISTA *lista = cria_lista(); // cria a lista
-    int opcao;
-    do
-    {
-        printf("\n1 - Insere no inicio\n");
-        printf("2 - Insere no final\n");
-        printf("3 - Exibe\n");
-        printf("4 - Libera\n");
-        printf("5 - Remove do inicio\n");
-        printf("6 - Remove do final\n");
-        printf("7 - Ordena\n");
-        printf("8 - Insere ordenado\n");
-        printf("9 - Insere no meio\n");
-        printf("10 - Remove do meio\n");
-        printf("0 - Sair\n");
-        printf("Digite a opcao: ");
-        scanf("%d", &opcao);
-        limparBuffer(); // Limpar o buffer de entrada
-        switch (opcao)
-        {
-        case 1:
-            insereInicio(lista);
-            break;
-        case 2:
-            insereFinal(lista);
-            break;
-        case 3:
-            exibe(lista);
-            break;
-        case 4:
-            libera(lista);
-            break;
-        case 5:
-            removeInicio(lista);
-            break;
-        case 6:
-            removeFinal(lista);
-            break;
-        case 7:
-            ordena(lista);
-            break;
-        case 8:
-            inserirOrdenado(lista);
-            break;
-        case 9:
-            int indexAnt;
-            printf("Digite o indice do elemento anterior(começa em 0): ");
-            scanf("%d", &indexAnt);
-            limparBuffer(); // Limpar o buffer de entrada
-            inserirMeio(lista, indexAnt);
-            break;
-        case 10:
-            int numRem;
-            printf("Digite o valor a ser removido: ");
-            scanf("%d", &numRem);
-            limparBuffer(); // Limpar o buffer de entrada
-
-            removerMeio(lista, numRem);
-            break;
-        case 0:
-            printf("Saindo...\n");
-            break;
-        default:
-            printf("Opcao invalida\n");
-        }                 // fim switch
-    } while (opcao != 0); // fim do while
-    return 0;
-}
-
