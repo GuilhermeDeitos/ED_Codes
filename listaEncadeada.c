@@ -257,6 +257,63 @@ void removeFinal(LISTA *lista)
         printf("Removido com sucesso\n");
     }
 }
+void removerMeio(LISTA *lista, int numRem){
+    if((*lista) == NULL) { //Caso seja o primeiro valor
+        printf("Lista vazia\n");
+    } else {
+        node *aux,*aux2;
+        aux = (*lista);
+        while(aux && aux->data != numRem){
+            aux2 = aux;
+            aux = aux->prox;
+        }
+        if(aux == NULL){
+            printf("Valor nao encontrado\n");
+        } else {
+            aux2->prox = aux->prox;
+            free(aux);
+            printf("Removido com sucesso\n");
+        }
+
+    }
+
+}
+void removerRepetidos(LISTA *lista, int num) {
+    if ((*lista) == NULL) {
+        printf("Não há elementos\n");
+        return;
+    } 
+
+    node *aux = (*lista);
+    node *ant = NULL;
+    int cont = 0;
+
+    while (aux != NULL) {
+        if (aux->data == num) {
+            cont++;
+            if (ant == NULL) {
+                // Remover o primeiro elemento da lista
+                (*lista) = aux->prox;
+                free(aux);
+                aux = (*lista);
+            } else {
+                ant->prox = aux->prox;
+                free(aux);
+                aux = ant->prox;
+            }
+        } else {
+            ant = aux;
+            aux = aux->prox;
+        }
+    }
+
+    if (cont == 0) {
+        printf("Num não encontrado\n");
+    } else {
+        printf("Número repetido removido %d vezes\n", cont);
+    }
+}
+
 
 int main()
 {
