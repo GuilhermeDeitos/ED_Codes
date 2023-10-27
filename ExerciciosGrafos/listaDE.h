@@ -1,4 +1,11 @@
-#include <iostream>
+//
+// Created by guilh on 24/10/2023.
+//
+
+#ifndef ED_CODES_LISTADE_H
+#define ED_CODES_LISTADE_H
+
+
 // Guilherme Augusto Deitos Alves
 
 using namespace std;
@@ -57,6 +64,12 @@ public:
     void orderList();
     bool isInList(int) const;
     void printList() const;
+    int getSize() const
+    {
+        return size;
+    }
+
+    void getData(int[]) const;
 
 private:
     IntNode *head, *tail;
@@ -106,7 +119,7 @@ void IntList::addToTail(int data)
 void IntList::addOrdered(int data)
 {
     if (isEmpty())
-        throw runtime_error("Lista vazia!");
+        cout << "Lista vazia" << endl;
     IntNode *tmp = head;
     while (tmp->next != nullptr && tmp->next->data < data)
         tmp = tmp->next;
@@ -131,7 +144,7 @@ int IntList::deleteFromHead()
         delete tmp;
         head = tail = nullptr;
     }
-        
+
     else
     {
         head = head->next;
@@ -204,7 +217,7 @@ void IntList::deleteNode(int data)
                 delete tmp;
                 size--;
                 return;
-            } 
+            }
         }
     }
     cout << "Não encontrado" << endl;
@@ -213,7 +226,7 @@ void IntList::deleteNode(int data)
 bool IntList::isInList(int data) const
 {
     IntNode *tmp;
-    for (tmp = head; tmp != nullptr && tmp->data != data; tmp = tmp->next)
+    for (tmp = head; tmp != nullptr && !(tmp->data == data); tmp = tmp->next)
         ;
     return tmp != nullptr;
 }
@@ -238,77 +251,18 @@ void IntList::orderList()
             }
         }
     }
-    
+
 }
 
-int main()
+void IntList::getData(int vet[]) const
 {
-    //Crie um menu interativo para testar as funções da lista
-    int opcao;
-    IntList *lista = new IntList();
-    do
-    {
-        cout << "1 - Adicionar no inicio" << endl;
-        cout << "2 - Adicionar no fim" << endl;
-        cout << "3 - Adicionar ordenado" << endl;
-        cout << "4 - Remover do inicio" << endl;
-        cout << "5 - Remover do fim" << endl;
-        cout << "6 - Remover um elemento" << endl;
-        cout << "7 - Verificar se um elemento está na lista" << endl;
-        cout << "8 - Imprimir lista" << endl;
-        cout << "9 - Ordenar lista" << endl;
-        cout << "0 - Sair" << endl;
-        cin >> opcao;
-        switch (opcao)
-        {
-        case 1:
-            int data;
-            cout << "Digite o valor a ser adicionado: ";
-            cin >> data;
-            lista->addToHead(data);
-            break;
-        case 2:
-            cout << "Digite o valor a ser adicionado: ";
-            cin >> data;
-            lista->addToTail(data);
-            break;
-        case 3:
-            cout << "Digite o valor a ser adicionado: ";
-            cin >> data;
-            lista->addOrdered(data);
-            break;
-        case 4:
-            cout << "Removido: " << lista->deleteFromHead() << endl;
-            break;
-        case 5:
-            cout << "Removido: " << lista->deleteFromTail() << endl;
-            break;
-        case 6:
-            cout << "Digite o valor a ser removido: ";
-            cin >> data;
-            lista->deleteNode(data);
-            break;
-        case 7:
-            cout << "Digite o valor a ser verificado: ";
-            cin >> data;
-            if (lista->isInList(data))
-                cout << "Está na lista" << endl;
-            else
-                cout << "Não está na lista" << endl;
-            break;
-        case 8:
-            lista->printList();
-            break;
-        case 9:
-            lista->orderList();
-            break;
-        case 0:
-            break;
-        default:
-            cout << "Opção inválida" << endl;
-            break;
-        }
-    } while (opcao != 0);
 
-    return 0;
+    int i = 0;
+    for (IntNode *tmp = head; tmp != nullptr; tmp = tmp->next) {
+        vet[i] = tmp->data;
+        i++;
+    }
+
 }
+
+#endif //ED_CODES_LISTADE_H
