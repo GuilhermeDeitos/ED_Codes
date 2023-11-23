@@ -5,6 +5,7 @@ int main(){
     bool direcionado = true;
 
     Grafo grafo1(max, valorArestaNula, direcionado);
+    Grafo grafo2(max, valorArestaNula, direcionado);
 
     grafo1.inserirVertice(0);
     grafo1.inserirVertice(1);
@@ -18,14 +19,16 @@ int main(){
     grafo1.inserirAresta(1, 3);
     grafo1.inserirAresta(1, 4);
     grafo1.inserirAresta(2, 4);
-    grafo1.inserirAresta(2, 5);
     grafo1.inserirAresta(3, 0);
     grafo1.inserirAresta(3, 4);
+
 
     grafo1.imprimirMat();
 
     grafo1.buscaLargura(0, 3);
     grafo1.buscaProfundidade(0, 4);
+
+    grafo1.buscaMenorCaminho(0, 4);
 
     return 0;
 }

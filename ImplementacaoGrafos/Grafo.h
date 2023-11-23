@@ -1,10 +1,7 @@
 // Grafo simples não direcionado e ponderado
 #ifndef GRAFO_H
 #define GRAFO_H
-
 #include <iostream>
-#include "pilhaDinamica.h"
-#include "filaDinamica.h"
 
 using namespace std;
 
@@ -31,6 +28,8 @@ class Grafo
     bool buscaProfundidadeRecursaoAux(int vertice, int destino, int& profundidade);
     void buscaLargura(int origem, int destino);
     bool buscaLarguraRecursaoAux(int vertice, int destino);
+    void buscaMenorCaminho(int vertice, int destino);
+    bool buscaMenorCaminhoAux(int vertice, int destino, int& distancia, int *anterior);
 
 
     private:
@@ -269,36 +268,36 @@ void Grafo::limpaMarcador(){
 }
 
 void Grafo::buscaLargura(int origem, int destino) {
-    limpaMarcador();
-    bool encontrado = buscaLarguraRecursaoAux(origem, destino);
-    if (encontrado)
+    limpaMarcador(); //Inicializa o vetor de vertices adentrados
+    bool encontrado = buscaLarguraRecursaoAux(origem, destino); // Chama a função auxiliar que contém a recursão e retorna se foi encontrado ou não
+    if (encontrado) 
         cout << "Encontrado" << endl;
     else
         cout << "Não encontrado" << endl;
 }
 
 bool Grafo::buscaLarguraRecursaoAux(int vertice, int destino) {
-    visitados[obterIndice(vertice)] = true;
+    visitados[obterIndice(vertice)] = true; //Dá o valor verdadeiro para o indice que contem o vertice inicial
     cout << "Visitou: " << vertice << endl;
 
-    if (vertice == destino)
+    if (vertice == destino) //O vertice já seja igual o destino, já retorna
         return true;
 
-    for (int i = 0; i < maxVertices; i++) {
-        if (matrizAdjacencias[obterIndice(vertice)][i] != arestaNula && !visitados[i]) {
+    for (int i = 0; i < maxVertices; i++) { //Percorre a matriz de adjacencias
+        if (matrizAdjacencias[obterIndice(vertice)][i] != arestaNula && !visitados[i]) { //Verifica a matriz na posição [indice] e posição atual do contador presente no laço de repetição, caso essa posição seja igual a um valor válido e não tenha sido visitado, enfileira
             cout << "Enfileirou: " << vertices[i] << endl;
-            if (buscaLarguraRecursaoAux(vertices[i], destino))
-                return true;
+            if (buscaLarguraRecursaoAux(vertices[i], destino)) //Após enfileirar, passa o vertice atual como parametros para a função recursiva, e continua nesse loop até o primeiro (vertice == destino) retorne verdadeiro
+                return true; 
         }
     }
 
-    return false;
+    return false; //Caso não encontre
 }
 
 void Grafo::buscaProfundidade(int vertice, int destino) {
     limpaMarcador();
-    int profundidade = 0;
-    bool encontrado = buscaProfundidadeRecursaoAux(vertice, destino, profundidade);
+    int profundidade = 0; //Inicializa a profundidade
+    bool encontrado = buscaProfundidadeRecursaoAux(vertice, destino, profundidade); //Verifica  se foi encontrado
     if (encontrado){
         cout << "Encontrado" << endl;
         cout << "Profundidade: " << profundidade << endl;
@@ -308,22 +307,57 @@ void Grafo::buscaProfundidade(int vertice, int destino) {
 }
 
 bool Grafo::buscaProfundidadeRecursaoAux(int vertice, int destino, int& profundidade) {
-    visitados[obterIndice(vertice)] = true;
+    visitados[obterIndice(vertice)] = true; //Dá o valor verdadeiro para o indice que contem o vertice inicial
     cout << "Visitou: " << vertice << endl;
 
-    if (vertice == destino)
+    if (vertice == destino) 
         return true;
 
     for (int i = 0; i < maxVertices; i++) {
-        if (matrizAdjacencias[obterIndice(vertice)][i] != arestaNula && !visitados[i]) {
+        if (matrizAdjacencias[obterIndice(vertice)][i] != arestaNula && !visitados[i]) {//Verifica a matriz na posição [indice] e posição atual do contador presente no laço de repetição, caso essa posição seja igual a um valor válido e não tenha sido visitado, enfileira
             cout << "Empilhou: " << vertices[i] << endl;
-            profundidade++;
-            if (buscaProfundidadeRecursaoAux(vertices[i], destino, profundidade))
+            profundidade++; //Aumenta a profundidade ao empilhar
+            if (buscaProfundidadeRecursaoAux(vertices[i], destino, profundidade)) //Após enfileirar, passa o vertice atual como parametros para a função recursiva, e continua nesse loop até o primeiro
+
                 return true;
-            profundidade--;
+            profundidade--; //Reduz a profundidade caso não encontre
         }
     }
 
     return false;
 }
+
+void Grafo::buscaMenorCaminho(int vertice, int destino){
+    limpaMarcador();
+    int distancia = 0;
+    int *anterior = nullptr;
+    bool encontrado = buscaMenorCaminhoAux(vertice, destino, distancia, anterior);
+
+    if(encontrado){
+        cout << "Encontrado" << endl;
+        cout << "Distancia: " << distancia << endl;
+    } else 
+        cout << "Não encontrado" << endl;
+}
+
+bool Grafo::buscaMenorCaminhoAux(int vertice, int destino, int& distancia, int* anterior){
+    visitados[obterIndice(vertice)] = true; //Dá o valor verdadeiro para o indice que contem o vertice inicial
+    cout << "Visitou: " << vertice << endl;
+
+    if(vertice == destino)
+        return true;
+
+    for(int i = 0; i < maxVertices; i++){
+        if(matrizAdjacencias[vertice][i] != arestaNula && !visitados[i]){
+            cout << "Enfileira:" << vertice<< endl;
+            distancia += matrizAdjacencias[vertice][i]; //Adicioanr o peso na distancia
+            if (buscaMenorCaminhoAux(vertices[i], destino, distancia, anterior))
+                return true;
+            anterior = &matrizAdjacencias[vertice][i];
+        }
+    }
+
+    return false;
+}
+
 #endif
