@@ -1,6 +1,7 @@
 // Grafo simples não direcionado e ponderado
 #ifndef GRAFO_H
 #define GRAFO_H
+#include <limits>
 #include <iostream>
 
 using namespace std;
@@ -29,7 +30,7 @@ class Grafo
     void buscaLargura(int origem, int destino);
     bool buscaLarguraRecursaoAux(int vertice, int destino);
     void buscaMenorCaminho(int vertice, int destino);
-    bool buscaMenorCaminhoAux(int vertice, int destino, int& distancia, int *anterior);
+    bool buscaMenorCaminhoAux(int vertice, int destino, int& distancia);
 
 
     private:
@@ -317,8 +318,7 @@ bool Grafo::buscaProfundidadeRecursaoAux(int vertice, int destino, int& profundi
         if (matrizAdjacencias[obterIndice(vertice)][i] != arestaNula && !visitados[i]) {//Verifica a matriz na posição [indice] e posição atual do contador presente no laço de repetição, caso essa posição seja igual a um valor válido e não tenha sido visitado, enfileira
             cout << "Empilhou: " << vertices[i] << endl;
             profundidade++; //Aumenta a profundidade ao empilhar
-            if (buscaProfundidadeRecursaoAux(vertices[i], destino, profundidade)) //Após enfileirar, passa o vertice atual como parametros para a função recursiva, e continua nesse loop até o primeiro
-
+            if (buscaProfundidadeRecursaoAux(vertices[i], destino, profundidade)) //Após empilhar, passa o vertice atual como parametros para a função recursiva, e continua nesse loop até o primeiro
                 return true;
             profundidade--; //Reduz a profundidade caso não encontre
         }
@@ -331,7 +331,7 @@ void Grafo::buscaMenorCaminho(int vertice, int destino){
     limpaMarcador();
     int distancia = 0;
     int *anterior = nullptr;
-    bool encontrado = buscaMenorCaminhoAux(vertice, destino, distancia, anterior);
+    bool encontrado = buscaMenorCaminhoAux(vertice, destino, distancia);
 
     if(encontrado){
         cout << "Encontrado" << endl;
@@ -340,24 +340,44 @@ void Grafo::buscaMenorCaminho(int vertice, int destino){
         cout << "Não encontrado" << endl;
 }
 
-bool Grafo::buscaMenorCaminhoAux(int vertice, int destino, int& distancia, int* anterior){
-    visitados[obterIndice(vertice)] = true; //Dá o valor verdadeiro para o indice que contem o vertice inicial
-    cout << "Visitou: " << vertice << endl;
+bool Grafo::buscaMenorCaminhoAux(int vertice, int destino, int& distancia) {
+    // Inicializa as distâncias com um valor grande, exceto para o vértice de origem
+    int distancias[maxVertices];
+    for (int i = 0; i < maxVertices; i++) {
+        distancias[i] = numeric_limits<int>::max();
+    }
+    distancias[vertice] = 0;
 
-    if(vertice == destino)
-        return true;
+    // Loop principal do algoritmo de Dijkstra
+    for (int count = 0; count < maxVertices - 1; count++) {
+        // Encontrar o vértice de menor distância ainda não processado
+        int u = -1;
+        for (int v = 0; v < maxVertices; v++) {
+            if (!visitados[v] && (u == -1 || distancias[v] < distancias[u])) {
+                u = v;
+            }
+        }
 
-    for(int i = 0; i < maxVertices; i++){
-        if(matrizAdjacencias[vertice][i] != arestaNula && !visitados[i]){
-            cout << "Enfileira:" << vertice<< endl;
-            distancia += matrizAdjacencias[vertice][i]; //Adicioanr o peso na distancia
-            if (buscaMenorCaminhoAux(vertices[i], destino, distancia, anterior))
-                return true;
-            anterior = &matrizAdjacencias[vertice][i];
+        // Marcar o vértice como processado
+        visitados[u] = true;
+
+        // Atualizar as distâncias dos vértices adjacentes ao vértice escolhido
+        for (int v = 0; v < maxVertices; v++) {
+            if (!visitados[v] && matrizAdjacencias[u][v] != arestaNula) {
+                int pesoAresta = matrizAdjacencias[u][v];
+                if (distancias[u] + pesoAresta < distancias[v]) {
+                    distancias[v] = distancias[u] + pesoAresta;
+                }
+            }
         }
     }
 
-    return false;
+    // A distância final para o destino é armazenada em 'distancias[destino]'
+    distancia = distancias[destino];
+
+    return (distancia != numeric_limits<int>::max());
 }
+
+
 
 #endif
