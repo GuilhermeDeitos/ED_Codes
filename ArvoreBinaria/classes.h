@@ -1,183 +1,273 @@
 #include <iostream>
 using namespace std;
 
-class No{
-    private:
-        int valor;
-        No* esq, *dir;
+class No
+{
+private:
+    int valor;
+    No *esq, *dir;
 
-    public: 
-        No(int valor){
-            this->valor = valor;
-            esq = nullptr;
-            dir = nullptr;
-        }
+public:
+    No(int valor)
+    {
+        this->valor = valor;
+        esq = nullptr;
+        dir = nullptr;
+    }
 
-        int getValor(){
-            return valor;
-        }
+    void setValor(int valor)
+    {
+        this->valor = valor;
+    }
 
-        No* getEsq(){
-            return esq;
-        }
+    int getValor()
+    {
+        return valor;
+    }
 
-        No* getDir(){
-            return dir;
-        }
+    No *getEsq()
+    {
+        return esq;
+    }
 
-        void setEsq(No* esq){
-            this->esq = esq;
-        }
-        
-        void setDir(No* dir){
-            this->dir = dir;
-        }
+    No *getDir()
+    {
+        return dir;
+    }
+
+    void setEsq(No *esq)
+    {
+        this->esq = esq;
+    }
+
+    void setDir(No *dir)
+    {
+        this->dir = dir;
+    }
+    int altura() const
+    {
+        if (this == nullptr)
+            return 0;
+        else
+            return 1 + max(esq->altura(), dir->altura());
+    }
 };
 
-
-class Arvore{
-    private:
-        No* raiz;
-
-    public:
-        Arvore(){
-            raiz = nullptr;
-        }
-        No* getRaiz(){
-            return raiz;
-        }
-        void inserir(int valor);
-        void inserirAux(No* no, int valor);
-        void preOrdem(No* no);
-        void emOrdem(No* no);
-        void posOrdem(No* no);
-        int buscaNumFilhos(No* no, int valor);
-        void removeNo(int valor);
-        void removeNoAux(No* no, int valor, No* ant);
+class Arvore
+{
+private:
+    No *raiz;
+    No *removeNoAux(No *no, No *ant, int valor);
+    No *buscaMaisDireita(No *no);
+    void imprimeArvoreAux(No *no, int nivel);
 
 
+public:
+    Arvore()
+    {
+        raiz = nullptr;
+    }
+    No *getRaiz()
+    {
+        return raiz;
+    }
+    void inserir(int valor);
+    void inserirAux(No *no, int valor);
+    void preOrdem(No *no);
+    void emOrdem(No *no);
+    void posOrdem(No *no);
+    void removeNo(int valor);
+    No* BuscaNo(No *no, int valor);
+    void imprimeArvore()
+    {
+        this->imprimeArvoreAux(raiz, 0);
+    }
 };
 
-
-void Arvore::inserir(int valor){
-    if(raiz == nullptr){
+void Arvore::inserir(int valor)
+{
+    if (raiz == nullptr)
+    {
         raiz = new No(valor);
-    }else{
+    }
+    else
+    {
         inserirAux(raiz, valor);
     }
 }
 
-void Arvore::inserirAux(No* no, int valor){
-    if(valor < no->getValor()){
-        if(no->getEsq() == nullptr){
+void Arvore::inserirAux(No *no, int valor)
+{
+    if (valor < no->getValor())
+    {
+        if (no->getEsq() == nullptr)
+        {
             no->setEsq(new No(valor));
-        }else{
+        }
+        else
+        {
             inserirAux(no->getEsq(), valor);
         }
-    } else if(valor > no->getValor()){
-        if(no->getDir() == nullptr){
+    }
+    else if (valor > no->getValor())
+    {
+        if (no->getDir() == nullptr)
+        {
             no->setDir(new No(valor));
-        } else {
+        }
+        else
+        {
             inserirAux(no->getDir(), valor);
         }
-    } else if (valor == no->getValor()){
+    }
+    else if (valor == no->getValor())
+    {
         cout << "Numero já existe" << endl;
     }
 }
 
-void Arvore::preOrdem(No* no){
-    if(no != nullptr){
+void Arvore::preOrdem(No *no)
+{
+    if (no != nullptr)
+    {
         cout << no->getValor() << endl;
         preOrdem(no->getEsq());
         preOrdem(no->getDir());
     }
 }
 
-void Arvore::emOrdem(No* no){
-    if(no != nullptr){
+void Arvore::emOrdem(No *no)
+{
+    if (no != nullptr)
+    {
         emOrdem(no->getEsq());
         cout << no->getValor() << endl;
         emOrdem(no->getDir());
     }
 }
 
-void Arvore::posOrdem(No* no){
-    if(no != nullptr){
+void Arvore::posOrdem(No *no)
+{
+    if (no != nullptr)
+    {
         posOrdem(no->getEsq());
         posOrdem(no->getDir());
         cout << no->getValor() << endl;
-
     }
 }
 
-void Arvore::removeNo(int valor){
-    if(raiz == nullptr){
+No* Arvore::BuscaNo(No *no, int valor)
+{
+    if (no == nullptr)
+    {
+        return nullptr;
+    }
+    else if (no->getValor() == valor)
+    {
+        return no;
+    }
+    else if (valor < no->getValor())
+    {
+        return BuscaNo(no->getEsq(), valor);
+    }
+    else
+    {
+        return BuscaNo(no->getDir(), valor);
+    }
+}
+void Arvore::removeNo(int valor)
+{
+    if (raiz == nullptr)
+    {
         cout << "Arvore Vazia" << endl;
-    } else {
-        removeNoAux(raiz, valor, nullptr);
+    }
+    else
+    {
+        raiz = removeNoAux(raiz, nullptr, valor);
     }
 }
 
+No *Arvore::removeNoAux(No *no, No *ant, int valor)
+{
+    // Caso base: se o nó for nulo
+    if (no == nullptr)
+        return no;
 
-int Arvore::buscaNumFilhos(No* no, int valor){
-    int numFilhos = 0;
-    cout << "Valor: " << no->getValor() << endl;
-    if(no->getValor() == valor){
-        if(no->getEsq() != nullptr){
-            numFilhos++;
-        }
-        if (no->getDir() != nullptr){
-            numFilhos++;
-        }
-    } else if(valor > no->getValor()){
-        removeNoAux(no->getDir(), valor, no);
-    } else if(valor < no->getValor()){
-        removeNoAux(no->getEsq(), valor, no);
-    } else {
-        cout << "Valor não encontrado" << endl;
-        return;
+    // Encontre o nó a ser removido
+    if (valor < no->getValor())
+    {
+        no->setEsq(removeNoAux(no->getEsq(), no, valor));
     }
+    else if (valor > no->getValor())
+    {
+        no->setDir(removeNoAux(no->getDir(), no, valor));
+    }
+    else
+    {
+        // Nó com apenas um filho ou sem filhos
+        if (no->getEsq() == nullptr)
+        {
+            No *temp = no->getDir();
+            delete no;
+            if (ant != nullptr)
+            {
+                if (ant->getEsq() == no)
+                    ant->setEsq(temp);
+                else
+                    ant->setDir(temp);
+            }
+            else
+            {
+                raiz = temp; // Atualiza a raiz
+            }
+            return temp;
+        }
+        else if (no->getDir() == nullptr)
+        {
+            No *temp = no->getEsq();
+            delete no;
+            if (ant != nullptr)
+            {
+                if (ant->getEsq() == no)
+                    ant->setEsq(temp);
+                else
+                    ant->setDir(temp);
+            }
+            else
+            {
+                raiz = temp; // Atualiza a raiz
+            }
+            return temp;
+        }
+        // Nó com dois filhos
+        No *temp = this->buscaMaisDireita(no->getEsq());
+        no->setValor(temp->getValor());
+        no->setEsq(removeNoAux(no->getEsq(), no, temp->getValor()));
+    }
+
+    return no;
 }
 
-void Arvore::removeNoAux(No* no, int valor, No* ant){
-    
 
-    if(numFilhos == 0) {
-        ant->setDir(nullptr);
-        ant->setEsq(nullptr);
-        delete no;
-        cout << "No removido" << endl;
+No *Arvore::buscaMaisDireita(No *no)
+{
+    No *aux = no;
+    while (aux && aux->getDir() != nullptr) // Enquanto existir um nó a direita, ele vai para a direita
+        aux = aux->getDir();
+    return aux;
+}
 
-    } else if (numFilhos == 1) {
-        if(no->getEsq() != nullptr){
-            if(ant->getEsq() == no){
-                ant->setEsq(no->getEsq());
-            } else {
-                ant->setDir(no->getEsq());
-            }
-        } else if(no->getDir() != nullptr){
-            if(ant->getEsq() == no){
-                ant->setEsq(no->getDir());
-            } else {
-                ant->setDir(no->getDir());
-            }
-        }
-        delete no;
-        cout << "No removido" << endl;
-    } else if (numFilhos == 2){
-        No* aux = no-> getEsq();
-        while(aux->getDir() != nullptr){
-            aux = aux->getDir();
-        }
+void Arvore::imprimeArvoreAux(No *no, int nivel)
+{
+    if (no == nullptr)
+            return;
 
-        if(ant->getEsq() == no){
-            ant->setEsq(aux);
-        } else {
-            ant->setDir(aux);
-        }
+        imprimeArvoreAux(no->getDir(), nivel + 1);
 
-        delete no;
-        cout << "No removido" << endl;
+        for (int i = 0; i < nivel; i++)
+            cout << "    ";
 
-    }
+        cout << no->getValor() << endl;
+
+        imprimeArvoreAux(no->getEsq(), nivel + 1);
 }
