@@ -234,27 +234,18 @@ void Arvore::Balanceamento(No *no)
     }
     else
     {
-        for (auto i = Lista.begin(); i != Lista.end(); i++)
-        {
-            cout << "Poltrona: " << (*i)->getValor() << endl;
-        }
         auto iterador = Lista.begin();
         int sizeList = Lista.size();
         int meio = sizeList / 2;
-
         advance(iterador, meio);
-        cout << "Valor do meio: " << (*iterador)->getValor() << endl;
-
-        this->preOrdem(raiz);
 
         raiz = new No((*iterador)->getValor(), (*iterador)->getNome());
         for (auto i = Lista.begin(); i != Lista.end(); i++)
         {
+            if((*i)->getValor() == (*iterador)->getValor())
+                continue;
             this->inserir((*i)->getValor(), (*i)->getNome());
         }
-
-        this->preOrdem(raiz);
-
         Lista.clear();
 
         cout << "Balanceamento feito" << endl;
