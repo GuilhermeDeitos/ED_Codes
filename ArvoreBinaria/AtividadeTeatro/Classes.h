@@ -218,7 +218,7 @@ void Arvore::atualizarNome(No *no, string nome, string novoNome, int op, int val
     if (no == nullptr)
     {
         return;
-    } else if(buscaNome(novoNome)->getSize() > 0){
+    } else if(buscaNome(novoNome)->getSize() > 0 && op != 1){
             cout << "Ja existe uma reserva com esse nome" << endl;
             return;
     }

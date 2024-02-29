@@ -1,6 +1,7 @@
-#include <iostream>
+//Guilherme Augusto Deitos Alves
+//Gabriel Yudi Leite Higuchi
+//Notamos que por algum motivo o compilador do codeblocks dá erro com nosso codigo, porém no g++(o que eu uso pra programar no vscode) funciona bonitinho
 #include "Classes.h"
-using namespace std;
 
 void showMenu() {
     cout << "===== MENU =====" << endl;
