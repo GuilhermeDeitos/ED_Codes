@@ -34,7 +34,7 @@ int main() {
                 cout << "Digite o nome da reserva: ";
                 cin >> nome;
                 arvore.inserir(valor, nome);
-                cout << "Reserva inserida com sucesso!" << endl;
+               
                 break;
             }
             case 2: {
@@ -55,7 +55,6 @@ int main() {
                 } else {
                     cout << "Opcao invalida. Tente novamente." << endl;
                 }
-                cout << "Reserva removida com sucesso!" << endl;
                 break;
             }
             case 3: {
@@ -71,7 +70,6 @@ int main() {
                     cout << "Digite o novo numero da poltrona: ";
                     cin >> novoValor;
                     arvore.atualizarPoltrona(arvore.getRaiz(), valor, novoValor);
-                    cout << "Poltrona atualizada com sucesso!" << endl;
                 } else if(op == 2){
                     int valor;
                     string nome, novoNome;
@@ -90,7 +88,6 @@ int main() {
                     } 
 
                     arvore.atualizarNome(arvore.getRaiz(), nome, novoNome, op, valor);
-                    cout << "Nome atualizado com sucesso!" << endl;
                 } else {
                     cout << "Opcao invalida. Tente novamente." << endl;
                 }
@@ -101,20 +98,21 @@ int main() {
                 string nome;
                 cout << "Digite o nome a ser buscado: ";
                 cin >> nome;
-                list<No*> reservas = arvore.buscaNome(nome);
-                if (reservas.empty()) {
+                IntList* reservas = arvore.buscaNome(nome);
+                if (reservas->isEmpty()) {
                     cout << "Nenhuma reserva encontrada com esse nome." << endl;
                 } else {
                     cout << "Reservas encontradas:" << endl;
-                    for (No* reserva : reservas) {
-                        cout << "Poltrona: " << reserva->getValor() << endl;
-                        cout << "Nome vinculado: " << reserva->getNome() << endl;
+
+                    for (IntNode* reserva = reservas->getHead(); reserva != nullptr; reserva = reserva->next){
+                        cout << "Poltrona: " << reserva->nome << endl;
+                        cout << "Nome vinculado: " << reserva->data << endl;
                     }
                 }
                 break;
             }
             case 5: {
-                arvore.Balanceamento(arvore.getRaiz());
+                arvore.balanceamento(arvore.getRaiz());
                 break;
             }
             case 6: {

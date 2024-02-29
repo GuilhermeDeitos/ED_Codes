@@ -1,7 +1,6 @@
 #ifndef CLASSES_H_INCLUDED
 #define CLASSES_H_INCLUDED
-#include <list>
-
+#include "listaDuplamenteEncadeada.h"
 #include <iostream>
 using namespace std;
 
@@ -67,11 +66,12 @@ private:
     No *raiz;
     No *removeNoAux(No *no, No *ant, int valor);
     No *buscaMaisDireita(No *no);
-    list<No *> Lista;
+    IntList *Lista;
     void preOrdem(No *no);
     int buscaNumFilhos(No *no, int valor);
-    list<No *> buscaNomeAux(No *no, string nome, list<No *> &lista);
+    IntList *buscaNumFilhosAux(No *no, int valor, IntList lista);
     void inserirAux(No *no, int valor, string nome);
+    IntList *buscaNomeAux(No *no, string nome, IntList *lista);
 
 public:
     Arvore()
@@ -85,16 +85,32 @@ public:
     void inserir(int valor, string nome);
     void emOrdem(No *no, int op);
     void removeNo(int valor);
-    list<No *> buscaNome(string nome);
-    void Balanceamento(No *no);
+    IntList *buscaNome(string nome);
+    void balanceamento(No *no);
     void removeNoByName(string name);
-    void atualizarNome(No *no, string nome, string novoNome, int op,  int valor);
+    void atualizarNome(No *no, string nome, string novoNome, int op, int valor);
     void atualizarPoltrona(No *no, int valor, int novoValor);
 };
 
-list<No *> Arvore::buscaNome(string nome)
+int Arvore::buscaNumFilhos(No *no, int valor)
 {
-    list<No *> listaBusca;
+    if (no == nullptr)
+    {
+        return 0;
+    }
+    if (no->getValor() == valor)
+    {
+        return 1 + buscaNumFilhos(no->getEsq(), valor) + buscaNumFilhos(no->getDir(), valor);
+    }
+    else
+    {
+        return buscaNumFilhos(no->getEsq(), valor) + buscaNumFilhos(no->getDir(), valor);
+    }
+}
+
+IntList *Arvore::buscaNome(string nome)
+{
+    IntList *listaBusca = new IntList();
     if (raiz == nullptr)
     {
         cout << "Nenhuma reserva feita" << endl;
@@ -106,13 +122,13 @@ list<No *> Arvore::buscaNome(string nome)
     return listaBusca;
 }
 
-list<No *> Arvore::buscaNomeAux(No *no, string nome, list<No *> &lista)
+IntList *Arvore::buscaNomeAux(No *no, string nome, IntList *lista)
 {
     if (no != nullptr)
     {
         if (no->getNome() == nome)
         {
-            lista.push_back(no);
+            lista->addToTail(no->getValor(), no->getNome());
         }
         buscaNomeAux(no->getEsq(), nome, lista);
         buscaNomeAux(no->getDir(), nome, lista);
@@ -140,6 +156,8 @@ void Arvore::inserirAux(No *no, int valor, string nome)
         if (no->getEsq() == nullptr)
         {
             no->setEsq(new No(valor, nome));
+            cout << "Reserva inserida com sucesso!" << endl;
+
         }
         else
         {
@@ -151,6 +169,8 @@ void Arvore::inserirAux(No *no, int valor, string nome)
         if (no->getDir() == nullptr)
         {
             no->setDir(new No(valor, nome));
+            cout << "Reserva inserida com sucesso!" << endl;
+
         }
         else
         {
@@ -185,7 +205,7 @@ void Arvore::emOrdem(No *no, int op)
         }
         else if (op == 2)
         {
-            Lista.push_back(no);
+            Lista->addToTail(no->getValor(), no->getNome());
         }
 
         emOrdem(no->getDir(), op);
@@ -193,17 +213,30 @@ void Arvore::emOrdem(No *no, int op)
 }
 
 void Arvore::atualizarNome(No *no, string nome, string novoNome, int op, int valor = -1)
+// Caso op == 1, atualiza o nome da poltrona com o valor de nome para novoNome e caso op == 2, atualiza o nome da poltrona com o valor de valor para novoNome
 {
-    if (no == nullptr) {
+    if (no == nullptr)
+    {
         return;
+    } else if(buscaNome(novoNome)->getSize() > 0){
+            cout << "Ja existe uma reserva com esse nome" << endl;
+            return;
     }
 
-    if (op == 1 && no->getNome() == nome) {
+    if (op == 1 && no->getNome() == nome)
+    {
         no->setNome(novoNome);
-    } else if (op == 2 && no->getValor() == valor) {
+        cout << "Nome atualizado com sucesso!" << endl;
+
+    }
+    else if (op == 2 && no->getValor() == valor)
+    {
         no->setNome(novoNome);
-        return;  // Se o nome foi atualizado, não há necessidade de continuar a busca
-    } else if (op != 1 && op != 2) {
+        cout << "Nome atualizado com sucesso!" << endl;
+        return; // Se o nome foi atualizado, não há necessidade de continuar a busca
+    }
+    else if (op != 1 && op != 2)
+    {
         cout << "Opcao invalida" << endl;
         return;
     }
@@ -218,35 +251,48 @@ void Arvore::atualizarPoltrona(No *no, int valor, int novoValor)
     {
         if (no->getValor() == valor)
         {
-            no->setValor(novoValor);
+            //Verificar se não há poltrona com o mesmo valor
+            if (this->buscaNumFilhos(no, novoValor) == 0)
+            {
+                no->setValor(novoValor);
+                cout << "Poltrona atualizada com sucesso!" << endl;
+            }
+            else
+            {
+                cout << "Ja existe uma poltrona com esse numero" << endl;
+            }
         }
         atualizarPoltrona(no->getEsq(), valor, novoValor);
         atualizarPoltrona(no->getDir(), valor, novoValor);
     }
 }
 
-void Arvore::Balanceamento(No *no)
+void Arvore::balanceamento(No *no)
 {
+    Lista = new IntList();
     emOrdem(raiz, 2);
-    if (Lista.size() < 5)
+    if (Lista->getSize() < 5)
     {
         cout << "Nao ha poltronas suficientes para balanceamento" << endl;
     }
     else
     {
-        auto iterador = Lista.begin();
-        int sizeList = Lista.size();
-        int meio = sizeList / 2;
-        advance(iterador, meio);
+        
+        preOrdem(raiz);
+        cout << "Balanceando..." << endl;
+        IntNode *NoMeio = Lista->getMiddle();
 
-        raiz = new No((*iterador)->getValor(), (*iterador)->getNome());
-        for (auto i = Lista.begin(); i != Lista.end(); i++)
+        raiz = new No(NoMeio->data, NoMeio->nome);
+        cout << "Raiz: " << raiz->getValor() << endl;
+        for (auto i = Lista->getHead(); i != nullptr; i = i->next)
         {
-            if((*i)->getValor() == (*iterador)->getValor())
+            if (i->data == NoMeio->data)
                 continue;
-            this->inserir((*i)->getValor(), (*i)->getNome());
+            this->inserir(i->data, i->nome);
         }
-        Lista.clear();
+
+        Lista->~IntList();
+        preOrdem(raiz);
 
         cout << "Balanceamento feito" << endl;
     }
@@ -260,12 +306,12 @@ void Arvore::removeNoByName(string name)
     }
     else
     {
-        list<No *> listaRemocao = buscaNome(name);
-        if (listaRemocao.size() > 0)
+        IntList* listaRemocao = buscaNome(name);
+        if (listaRemocao->getSize() > 0)
         {
-            for (auto i = listaRemocao.begin(); i != listaRemocao.end(); i++)
+            for (auto i = listaRemocao->getHead(); i != nullptr; i = i->next)
             {
-                removeNo((*i)->getValor());
+                removeNo(i->data);
             }
             cout << "Remocao feita" << endl;
         }
@@ -285,16 +331,17 @@ void Arvore::removeNo(int valor)
     else
     {
         raiz = removeNoAux(raiz, nullptr, valor);
+
     }
 }
 
 No *Arvore::removeNoAux(No *no, No *ant, int valor)
 {
-    // Caso base: se o n� for nulo
+    // Caso base: se o nó for nulo
     if (no == nullptr)
         return no;
 
-    // Encontre o n� a ser removido
+    // Encontre o nó a ser removido
     if (valor < no->getValor())
     {
         no->setEsq(removeNoAux(no->getEsq(), no, valor));
@@ -305,11 +352,13 @@ No *Arvore::removeNoAux(No *no, No *ant, int valor)
     }
     else
     {
-        // N� com apenas um filho ou sem filhos
+        // Nó com apenas um filho ou sem filhos
         if (no->getEsq() == nullptr)
         {
             No *temp = no->getDir();
             delete no;
+            cout << "Reserva removida com sucesso!" << endl;
+
             if (ant != nullptr)
             {
                 if (ant->getEsq() == no)
@@ -327,6 +376,8 @@ No *Arvore::removeNoAux(No *no, No *ant, int valor)
         {
             No *temp = no->getEsq();
             delete no;
+            cout << "Reserva removida com sucesso!" << endl;
+
             if (ant != nullptr)
             {
                 if (ant->getEsq() == no)
@@ -340,10 +391,11 @@ No *Arvore::removeNoAux(No *no, No *ant, int valor)
             }
             return temp;
         }
-        // N� com dois filhos
+        // Nó com dois filhos
         No *temp = this->buscaMaisDireita(no->getEsq());
         no->setValor(temp->getValor());
         no->setEsq(removeNoAux(no->getEsq(), no, temp->getValor()));
+
     }
 
     return no;
@@ -352,7 +404,7 @@ No *Arvore::removeNoAux(No *no, No *ant, int valor)
 No *Arvore::buscaMaisDireita(No *no)
 {
     No *aux = no;
-    while (aux && aux->getDir() != nullptr) // Enquanto existir um n� a direita, ele vai para a direita
+    while (aux && aux->getDir() != nullptr) // Enquanto existir um nó a direita, ele vai para a direita
         aux = aux->getDir();
     return aux;
 }
