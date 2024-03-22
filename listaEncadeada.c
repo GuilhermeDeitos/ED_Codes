@@ -198,27 +198,6 @@ void libera(LISTA *lista)
     }
 }
 
-void removerMeio(LISTA *lista, int numRem){
-    if((*lista) == NULL) { //Caso seja o primeiro valor
-        printf("Lista vazia\n");
-    } else {
-        node *aux,*aux2;
-        aux = (*lista);
-        while(aux && aux->data != numRem){
-            aux2 = aux;
-            aux = aux->prox;
-        }
-        if(aux == NULL){
-            printf("Valor nao encontrado\n");
-        } else {
-            aux2->prox = aux->prox;
-            free(aux);
-            printf("Removido com sucesso\n");
-        }
-
-    }
-
-}
 
 void removeInicio(LISTA *lista)
 {
